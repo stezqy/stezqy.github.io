@@ -327,8 +327,8 @@
       
         
           
-            <p>####JAVA类加载器</p>
-<p>#####原理：<br>新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。</p>
+            <p>##JAVA类加载器</p>
+<p>###原理：<br>新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。</p>
 <p>#####Java虚拟机中类加载器：<br>Java虚拟机中可以安装多个类加载器，系统默认三个主要的类加载器，每个类负责加载特定位置的类：BootStrap,ExtClassLoader,AppClassLoader。</p>
 <p>类加载器也是Java类，因为Java类的类加载器本身也是要被类加载器加载的，显然必须有第一个类加载器不是Java类，这个正是BootStrap,使用C/C++代码写的，已经封装到JVM内核中了，而ExtClassLoader和AppClassLoader是Java类。</p>
 <p><img src="./1457151660362.png" alt="Alt text"></p>
