@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo,node.js," />
+  <meta name="keywords" content="Hook,android," />
 
 
 
@@ -59,25 +59,28 @@
 
 
 
-<meta name="description" content="##JAVA类加载器
-###原理：新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。
-#####Java虚拟机中类加载器：Java虚拟机中可以安装多个类加载器，系统默认三个主要">
+<meta name="description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
+所有代码详见github。
+Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。
+LOCAL_PATH := $(call my-dir)
+include $(C">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
+<meta property="og:title" content="Hook详解(一)">
 <meta property="og:url" content="http://yoursite.com/2016/04/05/hello-world/index.html">
 <meta property="og:site_name" content="STEVEN'S BLOG">
-<meta property="og:description" content="##JAVA类加载器
-###原理：新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。
-#####Java虚拟机中类加载器：Java虚拟机中可以安装多个类加载器，系统默认三个主要">
-<meta property="og:image" content="http://yoursite.com/./1457151660362.png">
-<meta property="og:image" content="http://yoursite.com/./1457151880765.png">
-<meta property="og:updated_time" content="2016-04-06T07:31:47.199Z">
+<meta property="og:description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
+所有代码详见github。
+Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。
+LOCAL_PATH := $(call my-dir)
+include $(C">
+<meta property="og:updated_time" content="2016-04-07T11:34:48.810Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="##JAVA类加载器
-###原理：新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。
-#####Java虚拟机中类加载器：Java虚拟机中可以安装多个类加载器，系统默认三个主要">
-<meta name="twitter:image" content="http://yoursite.com/./1457151660362.png">
+<meta name="twitter:title" content="Hook详解(一)">
+<meta name="twitter:description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
+所有代码详见github。
+Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。
+LOCAL_PATH := $(call my-dir)
+include $(C">
 
 
 
@@ -95,7 +98,7 @@
   };
 </script>
 
-  <title> Hello World | STEVEN'S BLOG </title>
+  <title> Hook详解(一) | STEVEN'S BLOG </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -265,7 +268,7 @@
             
             
               
-                Hello World
+                Hook详解(一)
               
             
           </h1>
@@ -291,8 +294,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/日记/" itemprop="url" rel="index">
-                    <span itemprop="name">日记</span>
+                  <a href="/categories/android逆向/" itemprop="url" rel="index">
+                    <span itemprop="name">android逆向</span>
                   </a>
                 </span>
 
@@ -330,44 +333,154 @@
       
 
       
-        <p>##JAVA类加载器</p>
-<p>###原理：<br>新建一个java对象的时候，JVM要将这个对象对应的字节码加载到内存中，这个字节码的原始信息存放在classpath(就是我们新建Java工程的bin目录下)指定的目录下的.class文件,类加载需要将.class文件导入到硬盘中，经过一些处理之后变成字节码在加载到内存中。</p>
-<p>#####Java虚拟机中类加载器：<br>Java虚拟机中可以安装多个类加载器，系统默认三个主要的类加载器，每个类负责加载特定位置的类：BootStrap,ExtClassLoader,AppClassLoader。</p>
-<p>类加载器也是Java类，因为Java类的类加载器本身也是要被类加载器加载的，显然必须有第一个类加载器不是Java类，这个正是BootStrap,使用C/C++代码写的，已经封装到JVM内核中了，而ExtClassLoader和AppClassLoader是Java类。</p>
-<p><img src="./1457151660362.png" alt="Alt text"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.loadclass.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * 测试类</span><br><span class="line"> * <span class="doctag">@author</span> Administrator</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassLoaderTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@SuppressWarnings</span>(<span class="string">"rawtypes"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">		<span class="comment">//输出ClassLoaderText的类加载器名称</span></span><br><span class="line">		System.out.println(<span class="string">"ClassLoaderText类的加载器的名称:"</span>+ClassLoaderTest.class.getClassLoader().getClass().getName());</span><br><span class="line">		System.out.println(<span class="string">"System类的加载器的名称:"</span>+System.class.getClassLoader());</span><br><span class="line">		System.out.println(<span class="string">"List类的加载器的名称:"</span>+List.class.getClassLoader());</span><br><span class="line">		</span><br><span class="line">		ClassLoader cl = ClassLoaderTest.class.getClassLoader();</span><br><span class="line">		<span class="keyword">while</span>(cl != <span class="keyword">null</span>)&#123;</span><br><span class="line">			System.out.print(cl.getClass().getName()+<span class="string">"-&gt;"</span>);</span><br><span class="line">			cl = cl.getParent();</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(cl);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="./1457151880765.png" alt="Alt text"></p>
-<p><strong>当Java虚拟机要加载第一个类的时候，到底派出哪个类加载器去加载呢？</strong></p>
-<p>(1). 首先当前线程的类加载器去加载线程中的第一个类(当前线程的类加载器：Thread类中有一个get/setContextClassLoader(ClassLoader cl);方法，可以获取/指定本线程中的类加载器)<br>(2). 如果类A中引用了类B,Java虚拟机将使用加载类A的类加载器来加载类B<br>(3). 还可以直接调用ClassLoader.loadClass(String className)方法来指定某个类加载器去加载某个类</p>
-<p>因为System类，List，Map等这样的系统提供jar类都在rt.jar中，所以由BootStrap类加载器加载，因为BootStrap是祖先类，不是Java编写的，所以打印出class为null</p>
-<p>其实采用这种<strong>树形的类加载机制</strong>的好处就在于：<br>能够很好的统一管理类加载，首先交给上级，如果上级有了，就加载，这样如果之前已经加载过的类，这时候在来加载它的时候只要拿过来用就可以了，无需二次加载了</p>
-<p><strong>自定义类加载器</strong><br>自定义的类加载器必须继承抽象类ClassLoader然后重写findClass方法，其实他内部还有一个loadClass方法和defineClass方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> Class&lt;?&gt; loadClass(String name, <span class="keyword">boolean</span> resolve)<span class="keyword">throws</span> ClassNotFoundException&#123;</span><br><span class="line">		 <span class="comment">//加上锁，同步处理，因为可能是多线程在加载类</span></span><br><span class="line">		 <span class="keyword">synchronized</span> (getClassLoadingLock(name)) &#123;</span><br><span class="line">			 <span class="comment">//检查，是否该类已经加载过了，如果加载过了，就不加载了</span></span><br><span class="line">			 Class c = findLoadedClass(name);</span><br><span class="line">			 <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">				 <span class="keyword">long</span> t0 = System.nanoTime();</span><br><span class="line">				 <span class="keyword">try</span> &#123;</span><br><span class="line">					 <span class="comment">//如果自定义的类加载器的parent不为null,就调用parent的loadClass进行加载类</span></span><br><span class="line">					 <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">						 c = parent.loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">					 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						 <span class="comment">//如果自定义的类加载器的parent为null，就调用findBootstrapClass方法查找类，就是Bootstrap类加载器</span></span><br><span class="line">						 c = findBootstrapClassOrNull(name);</span><br><span class="line">					 &#125;</span><br><span class="line">				 &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">					 <span class="comment">// ClassNotFoundException thrown if class not found</span></span><br><span class="line">					 <span class="comment">// from the non-null parent class loader</span></span><br><span class="line">				 &#125;</span><br></pre></td></tr></table></figure>
-<pre><code>         if (c == null) {
-                // If still not found, then invoke findClass in order
-                // to find the class.
-                long t1 = System.nanoTime();
-                //如果parent加载类失败，就调用自己的findClass方法进行类加载
-                c = findClass(name);
+        <p>写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。</p>
+<p>所有代码详见github。</p>
+<h3 id="Hook-From-蒸米"><a href="#Hook-From-蒸米" class="headerlink" title="Hook From 蒸米"></a>Hook From <a href="http://drops.wooyun.org/tips/9300" target="_blank" rel="external">蒸米</a></h3><h5 id="使用方法1"><a href="#使用方法1" class="headerlink" title="使用方法1:"></a>使用方法1:</h5><p>将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。</p>
+<pre><code>LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+LOCAL_MODULE    := target
+LOCAL_SRC_FILES := target.c
+include $(BUILD_EXECUTABLE)
+include $(CLEAR_VARS)
+LOCAL_MODULE    := hook1
+LOCAL_SRC_FILES := hook1.c
+include $(BUILD_EXECUTABLE)
+</code></pre><p>进入cmd,使用ndk-build编译，就会生成target,hook1文件。然后</p>
+<pre><code>adb push target /data/local/tmp
+adb shell
+cd /data/local/tmp
+chmod 777 ./target
+./target
+</code></pre><p>就能看见target已经开始运行了。<br>然后ps得到target的进程号,再按照上面一样的方法把hook1文件拷贝至手机，</p>
+<pre><code>./hook1 pid             //这里的pid改成之前得到的进程号
+</code></pre><p>既可以看到target已经被hook劫持。hook1-hook3均按此方法使用即可。</p>
+<h5 id="hook1-输出系统调用号与参数"><a href="#hook1-输出系统调用号与参数" class="headerlink" title="#hook1 输出系统调用号与参数"></a>#hook1 输出系统调用号与参数</h5><p>首先，PTRACE_ATTACH上target进程，PTRACE_ATTACH与PTRACE_TRACEME最大的区别在于，后者并不会使子进程停止，只有在进行exec系统调用的时候才会导致子进程暂停;而ATTACH会使子进程立马暂停下来。<br>PTRACE_SYSCALL是使子进程继续运行，知道在它进行系统调用之前或之后再暂停下来。<br>所以这里在ATTACH后，立马SYSCALL使target继续运行，然后循环wait等target暂停进行劫持。</p>
+<blockquote>
+<p>arm中系统调用由SWI实现,即软件中断(Software Interrupt),在请求系统服务时造成的中断,由SWI指令造成异常从而切入特权模式,从而允许非特权模式访问特权模式的函数.<br>ARM中有两种系统调用方式: OABI(old application binary interface)和EABI(extended application binary interface).见(内核源码arch/arm/kernel/entry-common.S文件).<br>对于OABI: 通过跟随在swi指令后的调用号来进行. 1101 1111 vvvv vvvv – SWI immed_8 (Thumb指令)格式)</p>
+</blockquote>
+<pre><code>swi (#num | 0x900000) (0x900000是个magic值)
+</code></pre><blockquote>
+<p>对于EABI: 调用号存放在r7中. 1110 1111 0000 0000 (ef000000)– SWI 0 (Thumb指令格式)</p>
+</blockquote>
+<pre><code>mov r7, #num
+swi 0x0
+</code></pre><p>所以下面这个就好理解啦</p>
+<pre><code>scno = ptrace(PTRACE_PEEKTEXT, pid, (void *)(regs-&gt;ARM_pc - 4), NULL);//[pc-4],
+if(scno == 0)
+    return 0;
 
-                // this is the defining class loader; record the stats
-                sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
-                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
-                sun.misc.PerfCounter.getFindClasses().increment();
-            }
-        }
-        if (resolve) {
-            resolveClass(c);
-        }
-        return c;
+if (scno == 0xef000000) {
+    scno = regs-&gt;ARM_r7;
+} else {
+    if ((scno &amp; 0x0ff00000) != 0x0f900000) {//关键是看是否是900000(magic值)        
+    return -1;
     }
+    scno &amp;= 0x000fffff;
 }
-</code></pre><p>defineClass这个方法很简单就是将<strong>class文件的字节数组编程一个class对象</strong>，这个方法肯定不能重写，内部实现是在C/C++代码中实现的</p>
-<p>findClass这个方法就是根据name来查找到class文件，在loadClass方法中用到，所以我们只能重写这个方法了，只要在这个方法中找到class文件，再将它用defineClass方法返回一个Class对象即可。</p>
-<p><strong>这三个方法的执行流程是：每个类加载器：loadClass-&gt;findClass-&gt;defineClass</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.loadclass.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * 自定义的类加载器</span><br><span class="line"> * <span class="doctag">@author</span> Administrator</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyClassLoader</span> <span class="keyword">extends</span> <span class="title">ClassLoader</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//需要加载类.class文件的目录</span></span><br><span class="line">	<span class="keyword">private</span> String classDir;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//无参的构造方法，用于class.newInstance()构造对象使用</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyClassLoader</span><span class="params">()</span></span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyClassLoader</span><span class="params">(String classDir)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.classDir = classDir;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@SuppressWarnings</span>(<span class="string">"deprecation"</span>)</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">		<span class="comment">//class文件的路径</span></span><br><span class="line">		String classPathFile = classDir + <span class="string">"/"</span> + name + <span class="string">".class"</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">//将class文件进行解密</span></span><br><span class="line">			FileInputStream fis = <span class="keyword">new</span> FileInputStream(classPathFile);</span><br><span class="line">			ByteArrayOutputStream bos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">			encodeAndDecode(fis,bos);</span><br><span class="line">			<span class="keyword">byte</span>[] classByte = bos.toByteArray();</span><br><span class="line">			<span class="comment">//将字节流变成一个class</span></span><br><span class="line">			<span class="keyword">return</span> defineClass(classByte,<span class="number">0</span>,classByte.length);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">super</span>.findClass(name);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//测试，先将ClassLoaderAttachment.class文件加密写到工程的class_temp目录下</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		<span class="comment">//配置运行参数</span></span><br><span class="line">		String srcPath = args[<span class="number">0</span>];<span class="comment">//ClassLoaderAttachment.class原路径</span></span><br><span class="line">		String desPath = args[<span class="number">1</span>];<span class="comment">//ClassLoaderAttachment.class输出的路径</span></span><br><span class="line">		String desFileName = srcPath.substring(srcPath.lastIndexOf(<span class="string">"\\"</span>)+<span class="number">1</span>);</span><br><span class="line">		String desPathFile = desPath + <span class="string">"/"</span> + desFileName;</span><br><span class="line">		FileInputStream fis = <span class="keyword">new</span> FileInputStream(srcPath);</span><br><span class="line">		FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(desPathFile);</span><br><span class="line">		<span class="comment">//将class进行加密</span></span><br><span class="line">		encodeAndDecode(fis,fos);</span><br><span class="line">		fis.close();</span><br><span class="line">		fos.close();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span><br><span class="line">	 * 加密和解密算法</span><br><span class="line">	 * <span class="doctag">@param</span> is</span><br><span class="line">	 * <span class="doctag">@param</span> os</span><br><span class="line">	 * <span class="doctag">@throws</span> Exception</span><br><span class="line">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">encodeAndDecode</span><span class="params">(InputStream is,OutputStream os)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">		<span class="keyword">int</span> bytes = -<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">while</span>((bytes = is.read())!= -<span class="number">1</span>)&#123;</span><br><span class="line">			bytes = bytes ^ <span class="number">0xff</span>;<span class="comment">//和0xff进行异或处理</span></span><br><span class="line">			os.write(bytes);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里还有很多的问题呀，首先，按照我们之前说的类加载机制，应该是先交给父级的类加载器，AppClassLoader-&gt;ExtClassLoader-&gt;BootStrap，ExtClassLoader和BootStrap没有找到ClassLoaderAttach.class，但是AppClassLoader类加载器应该能找到呀，可以为什么也没有找到呢？这时因为loadClass方法在使用系统类加载器的时候需要传递全称(包括包名)，我们传递ClassLoaderAttachment的话，AppClassLoader也是没有找到这个ClassLoaderAttachment,所以还是MyClassLoader处理了。</p>
-<p>具体代表在文件中。</p>
+return scno;
+</code></pre><h5 id="hook2-将参数字符串进行反转"><a href="#hook2-将参数字符串进行反转" class="headerlink" title="#hook2 将参数字符串进行反转"></a>#hook2 将参数字符串进行反转</h5><p>没啥好解释的。</p>
+<h5 id="hook3-动态执行libc-so中的sleep函数"><a href="#hook3-动态执行libc-so中的sleep函数" class="headerlink" title="#hook3 动态执行libc.so中的sleep函数"></a>#hook3 动态执行libc.so中的sleep函数</h5><p>可以看到hook3在ATTACH后没有syscall或continue，直接就开始hook。<br>get_remote_addr，其实就是在Libc.so中有一个sleep库函数，我要计算出它在so文件中的基址，然后再加上libc.so运行时的地址即可。</p>
+<p>我在得到target的reg后，将arm_pc改成sleep函数的地址，然后setreg，再PTRACE_CONTINUE使target继续运行，那么target实际运行的就是sleep函数。</p>
+<pre><code>int stat = 0;
+waitpid(pid, &amp;stat, WUNTRACED);
+while (stat != 0xb7f) {
+    if (ptrace_continue(pid) == -1) {
+        printf(&quot;error\n&quot;);
+        return -1;
+    }
+    waitpid(pid, &amp;stat, WUNTRACED);
+}
+</code></pre><h5 id="关于WUNTRACED"><a href="#关于WUNTRACED" class="headerlink" title="关于WUNTRACED"></a>关于WUNTRACED</h5><blockquote>
+<p>WUNTRACED告诉waitpid，如果子进程进入暂停状态，那么就立即返回。如果是被ptrace的子进程，<strong>那么即使不提供WUNTRACED参数，也会在子进程进入暂停状态的时候立即返回</strong>。对于使用ptrace_cont运行的子进程，它会在3种情况下进入暂停状态：<br>①下一次系统调用；<br>②子进程退出<br>③<strong>子进程的执行发生错误。这里的0xb7f就表示子进程进入了暂停状态，且发送的错误信号为11(SIGSEGV)</strong>，它表示试图访问未分配给自己的内存, 或试图往没有写权限的内存地址写数据。<br>那么什么时候会发生这种错误呢？显然，当子进程执行完注入的函数后，由于我们在前面设置了regs-&gt;ARM_lr = 0，它就会返回到0地址处继续执行，这样就会产生SIGSEGV了！</p>
+<p>再说一下stat的值：高2字节用于表示导致子进程的退出或暂停状态信号值，低2字节表示子进程是退出(0x0)还是暂停(0x7f)状态。0xb7f就表示子进程为暂停状态，导致它暂停的信号量为11即sigsegv错误。</p>
+</blockquote>
+<pre><code>if (regs-&gt;ARM_pc &amp; 1) {
+    /* thumb */
+    regs-&gt;ARM_pc &amp;= (~1u);
+    regs-&gt;ARM_cpsr |= CPSR_T_MASK;
+} else {
+    /* arm */
+    regs-&gt;ARM_cpsr &amp;= ~CPSR_T_MASK;
+}
+</code></pre><blockquote>
+<p>指令使用目标地址值的bit[0]来确定目标地址的指令类型。bit[0]的值为1时，目标程序为Thumb指令；bit[0]值为0时，目标程序为ARM指令。<br>CPSR寄存器 第六位为T。T=0,代表为ARM指令，T为1,代表为Thumb指令。</p>
+</blockquote>
+<h5 id="使用方法2："><a href="#使用方法2：" class="headerlink" title="使用方法2："></a>使用方法2：</h5><p>hook4开始要使用自己写的.so文件，所以把inject.c拷贝到jni文件下，然后编写Android.mk生成动态库文件。之后把libinject.so push 到/data/local/tmp下。之后运行target，再./hook4就可以进行劫持。</p>
+<pre><code>include $(CLEAR_VARS)
+LOCAL_MODULE    := inject
+LOCAL_SRC_FILES := inject.c
+LOCAL_LDLIBS := -llog 
+include $(BUILD_SHARED_LIBRARY)
+</code></pre><h5 id="hook4-动态加载so并执行自定义函数"><a href="#hook4-动态加载so并执行自定义函数" class="headerlink" title="#hook4: 动态加载so并执行自定义函数"></a>#hook4: 动态加载so并执行自定义函数</h5><p>保存当前寄存器的状态 -&gt; 获取目标程序的mmap, dlopen, dlsym, dlclose 地址 -&gt; 调用mmap分配一段内存空间用来保存参数信息 –&gt; 调用dlopen加载so文件 -&gt; 调用dlsym找到目标函数地址 -&gt; 使用ptrace_call执行目标函数 -&gt; 调用 dlclose 卸载so文件 -&gt; 恢复寄存器的状态。</p>
+<p>这里mmap我一开始一脸懵逼，没学过操作系统真的很心累啊T T。大神之所以使用mmap，是为了共享参数。在target中新增一块内存地址，然后把各种函数参数都写到这块内存里面，之后进行调用就很方便了。</p>
+<p>这里我们不光使用printf()还使用了android debug的函数LOGD()用来输出调试结果。所以在编译时我们需要加上LOCAL_LDLIBS := -llog。</p>
+<h5 id="hook5-函数挂钩实现native层hook"><a href="#hook5-函数挂钩实现native层hook" class="headerlink" title="#hook5: 函数挂钩实现native层hook"></a>#hook5: 函数挂钩实现native层hook</h5><p>其实就是android-inline-hook。<br>这里依旧要拷贝.so文件至手机。<br>基本思想是:</p>
+<ul>
+<li>先利用hook4调用我们自己写的libinject2.so中的mzhengHook函数。所以hook5.c和hook4.c没啥区别，就少了个dlclose进行卸载。所以主要逻辑代码都在libinject2.so文件。</li>
+<li>在MzhengHook中,将target的前三句指令换成我们自己的函数。然后其实该进程就推出了,target函数继续运行。</li>
+<li>然而target运行时，其实运行的是我们.so文件中自定义的函数，所以该函数可以劫持参数改变参数等。</li>
+<li>改变完后，调用hook_precall()恢复target为正常,然后让pc指向它。</li>
+<li>如果想一直劫持，就调用hook_postcall()再替换指令即可。</li>
+</ul>
+<p>再来看hook_direct函数。</p>
+<pre><code>hook_direct(&amp;eph,hookaddr,my_sevenWeapons);
+</code></pre><p>在main中调用hook_direct函数，其中hookaddr是我们要劫持的函数的地址，也就是target中的函数，my_sevenWeapons是我们要替换成的我们自己编写的函数，它存在于so文件中。eph是一个结构体</p>
+<pre><code>struct hook_t {
+unsigned int jump[3];
+unsigned int store[3];
+unsigned int orig;
+unsigned int patch;
+};
+</code></pre><p>首先，因为我们要修改的是target中的代码段，这一般是不可写的，所以要用mprotect把区间改成可写。</p>
+<blockquote>
+<p>虽然android有ASLR，但并没有PIE，所以program image是固定在0x8000这个地址的，因此我们用mprotect()函数将整个target代码段变成RWX，这样我们就能修改函数入口处的代码了。是否修改成功可以通过cat /proc/[pid]/maps查看。&lt;我测了一下，的确代码段是从8000-a000&gt;</p>
+</blockquote>
+<pre><code>//modify function entry    
+h-&gt;patch = (unsigned int)hookf;
+h-&gt;orig = addr;
+h-&gt;jump[0] = 0xe59ff000; // LDR pc, [pc, #0]
+h-&gt;jump[1] = h-&gt;patch;
+h-&gt;jump[2] = h-&gt;patch;
+for (i = 0; i &lt; 3; i++)
+    h-&gt;store[i] = ((int*)h-&gt;orig)[i];
+for (i = 0; i &lt; 3; i++)
+    ((int*)h-&gt;orig)[i] = h-&gt;jump[i];
+
+//cacheflush    
+hook_cacheflush((unsigned int)h-&gt;orig, (unsigned int)h-&gt;orig+sizeof(h-&gt;jump));
+return 1;
+</code></pre><p>h-&gt;patch 是我们自己写的函数地址。<br>h-&gt;origin 是要hook的函数地址。<br>h-&gt;jump<br>h-&gt;store是将hook的函数的前三条语句保存下来。然后再把h-&gt;jump放到h-&gt;origin中，替换原函数的前三条语句。</p>
+<blockquote>
+<p>随后我们需要确定目标函数的地址，这个有两种方法。如果目标程序本身没有被strip的话，那些symbol都是存在的，因此可以使用dlopen()和dlsym()等方法来获取目标函数地址。但很多情况，目标程序都会被strip，特别是可以直接运行的二进制文件默认都会被直接strip。比如target中的sevenWeapons()这个函数名会在编译的时候去掉，所以我们使用dlsym()的话是无法找到这个函数的。这时候我们就需要使用ida或者objdump来定位一下目标函数的地址。</p>
+<p>我们把目标函数的第一条指令修改为 LDR pc, [pc, #0]，这条指令的意思是跳转到PC指针所指的地址，由于pc寄存器读出的值实际上是当前指令地址加8，所以我们把后面两处指令都保存为hook函数的地址，这样的话，我们就能控制PC跳转到hook函数的地址了。<br>最后我们再调用hook_cacheflush()这个函数来刷新一下指令的缓存。因为虽然前面的操作修改了内存中的指令，但有可能被修改的指令已经被缓存起来了，再执行的话，CPU可能会优先执行缓存中的指令，使得修改的指令得不到执行。所以我们需要使用一个隐藏的系统调用来刷新一下缓存。(这不仅让我想起了路由器中的sleep函数T T)</p>
+</blockquote>
+<h4 id="hook-from-古河"><a href="#hook-from-古河" class="headerlink" title="hook from  古河"></a>hook from  <a href="http://bbs.pediy.com/showthread.php?t=141355" target="_blank" rel="external">古河<a></a></a></h4><p>古河大大的hook其实就是前面的Hook4方法，利用自己写的.so文件的函数进行hook。当然一开始看他的代码非常心累，还用到了shellcode.s汇编来进行利用。其实说到底他只是把所有的函数地址都现在shellcode.s中定义好，然后在.so文件中作为外部变量进行引用，所有例如dlpen函数的实现也都放到汇编中罢了。</p>
+<p>主要关注<strong>inject_remote_process</strong>函数。<br>例如，_dlopen_addr_s在shellcode.s中进行定义，然后在.so文件中extern进行外部引用。</p>
+<pre><code>code_length = (uint32_t)&amp;_inject_end_s - (uint32_t)&amp;_inject_start_s;//获取注入ShellCode代码指令的长度
+dlopen_param1_ptr = local_code_ptr + code_length + 0x20;//本地为函数dlopen的第1个参数pathname变量申请内存空间
+dlsym_param2_ptr = dlopen_param1_ptr + MAX_PATH;//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间
+saved_r0_pc_ptr = dlsym_param2_ptr + MAX_PATH;//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间
+inject_param_ptr = saved_r0_pc_ptr + MAX_PATH;  //本地为附加远程目标进程的Hook函数的参数inject_param_ptr申请内存空间 
+</code></pre><p>_inject_start_s为汇编中定义的shellcode开始符号</p>
+<p>所以古河的做法是，用mmap申请一段内存空间，构造方法是:<br>shellcode+dlpen_param1+dlsym_param2+saved_ro_pc+inject_param<br>把上述构造的内容放到mmap申请得到的内存空间中。</p>
+<pre><code>/* dlopen parameter 1: library name */
+strcpy( dlopen_param1_ptr, library_path );
+_dlopen_param1_s = REMOTE_ADDR( dlopen_param1_ptr, local_code_ptr, remote_code_ptr );
+DEBUG_PRINT( &quot;[+] _dlopen_param1_s: %x\n&quot;, _dlopen_param1_s );
+</code></pre><p>当然前面得到的_dlopen_param1_ptr都是在本地shellcode开始的地址。还要转换为放到mmap申请得到的内存空间后的remote_addr。</p>
+<pre><code>memcpy( &amp;regs, &amp;original_regs, sizeof(regs) );
+regs.ARM_sp = (long)remote_code_ptr;//修改附加远程目标进程的sp寄存器的值为ShellCode的注入地址
+regs.ARM_pc = (long)remote_code_ptr;//修改附加远程目标进程的pc寄存器的值为ShellCode的注入地址
+ptrace_setregs( target_pid, &amp;regs );
+ptrace_detach( target_pid );
+</code></pre><p>把sp ,pc都置为remote_code_ptr,然后detach使子进程开始运行shellcode。</p>
+<pre><code>remote_code_ptr = map_base+0x3C00; // 这里就预留了0x3c00的空间
+</code></pre><blockquote>
+<p>这里可以看到这句话的作用，因为sp也指向remote_addr，在注入代码之前一定得预留部分空间用作函数调用的栈空间</p>
+</blockquote>
+<p><a href="http://blog.csdn.net/jinzhuojun/article/details/9900105" target="_blank" rel="external">Android中的so注入(inject)和挂钩(hook) - For both x86 and arm</a></p>
+<p>网上也有大神实现了不用shellcode.s，直接在.so调call来进行hook的，大神还区分了i386和arm平台，对i386平台我就不多写了。</p>
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p><a href="http://kiya.space/2015/12/21/hook-syscall/" target="_blank" rel="external">hook - Android ARM下的的so注入<a></a></a></p>
 
       
     </div>
@@ -388,13 +501,27 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Hexo/" rel="tag">#Hexo</a>
+            <a href="/tags/Hook/" rel="tag">#Hook</a>
           
-            <a href="/tags/node-js/" rel="tag">#node.js</a>
+            <a href="/tags/android/" rel="tag">#android</a>
           
         </div>
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/06/My-New-Post/" rel="prev" title="My New Post">
+                My New Post <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
 
       
@@ -418,7 +545,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/04/05/hello-world/"
-           data-title="Hello World" data-url="http://yoursite.com/2016/04/05/hello-world/">
+           data-title="Hook详解(一)" data-url="http://yoursite.com/2016/04/05/hello-world/">
       </div>
     
   </div>
@@ -463,7 +590,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -518,7 +645,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hook-From-蒸米"><span class="nav-number">1.</span> <span class="nav-text">Hook From 蒸米</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用方法1"><span class="nav-number">1.0.1.</span> <span class="nav-text">使用方法1:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hook1-输出系统调用号与参数"><span class="nav-number">1.0.2.</span> <span class="nav-text">#hook1 输出系统调用号与参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hook2-将参数字符串进行反转"><span class="nav-number">1.0.3.</span> <span class="nav-text">#hook2 将参数字符串进行反转</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hook3-动态执行libc-so中的sleep函数"><span class="nav-number">1.0.4.</span> <span class="nav-text">#hook3 动态执行libc.so中的sleep函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关于WUNTRACED"><span class="nav-number">1.0.5.</span> <span class="nav-text">关于WUNTRACED</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用方法2："><span class="nav-number">1.0.6.</span> <span class="nav-text">使用方法2：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hook4-动态加载so并执行自定义函数"><span class="nav-number">1.0.7.</span> <span class="nav-text">#hook4: 动态加载so并执行自定义函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#hook5-函数挂钩实现native层hook"><span class="nav-number">1.0.8.</span> <span class="nav-text">#hook5: 函数挂钩实现native层hook</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hook-from-古河"><span class="nav-number">1.1.</span> <span class="nav-text">hook from  古河</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reference"><span class="nav-number">1.2.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
