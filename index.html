@@ -428,83 +428,21 @@
           
             <p>写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。</p>
 <p>所有代码详见github。</p>
-<h3 id="Hook-From-蒸米"><a href="#Hook-From-蒸米" class="headerlink" title="Hook From 蒸米"></a>Hook From <a href="http://drops.wooyun.org/tips/9300" target="_blank" rel="external">蒸米</a></h3><h5 id="使用方法1"><a href="#使用方法1" class="headerlink" title="使用方法1:"></a>使用方法1:</h5><p>将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。</p>
-<pre><code>LOCAL_PATH := $(call my-dir)
-include $(CLEAR_VARS)
-LOCAL_MODULE    := target
-LOCAL_SRC_FILES := target.c
-include $(BUILD_EXECUTABLE)
-include $(CLEAR_VARS)
-LOCAL_MODULE    := hook1
-LOCAL_SRC_FILES := hook1.c
-include $(BUILD_EXECUTABLE)
-</code></pre><p>进入cmd,使用ndk-build编译，就会生成target,hook1文件。然后</p>
-<pre><code>adb push target /data/local/tmp
-adb shell
-cd /data/local/tmp
-chmod 777 ./target
-./target
-</code></pre><p>就能看见target已经开始运行了。<br>然后ps得到target的进程号,再按照上面一样的方法把hook1文件拷贝至手机，</p>
-<pre><code>./hook1 pid             //这里的pid改成之前得到的进程号
-</code></pre><p>既可以看到target已经被hook劫持。hook1-hook3均按此方法使用即可。</p>
+<h3 id="Hook-From-蒸米"><a href="#Hook-From-蒸米" class="headerlink" title="Hook From 蒸米"></a>Hook From <a href="http://drops.wooyun.org/tips/9300" target="_blank" rel="external">蒸米</a></h3><h5 id="使用方法1"><a href="#使用方法1" class="headerlink" title="使用方法1:"></a>使用方法1:</h5><p>将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH := $(call my-dir)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE    := target</span><br><span class="line">LOCAL_SRC_FILES := target.c</span><br><span class="line">include $(BUILD_EXECUTABLE)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE    := hook1</span><br><span class="line">LOCAL_SRC_FILES := hook1.c</span><br><span class="line">include $(BUILD_EXECUTABLE)</span><br></pre></td></tr></table></figure></p>
+<p>进入cmd,使用ndk-build编译，就会生成target,hook1文件。然后<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb push target /data/local/tmp</span><br><span class="line">adb shell</span><br><span class="line">cd /data/local/tmp</span><br><span class="line">chmod <span class="number">777</span> ./target</span><br><span class="line">./target</span><br></pre></td></tr></table></figure></p>
+<p>就能看见target已经开始运行了。<br>然后ps得到target的进程号,再按照上面一样的方法把hook1文件拷贝至手机，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./hook1 pid             <span class="comment">//这里的pid改成之前得到的进程号</span></span><br></pre></td></tr></table></figure>
+<p>既可以看到target已经被hook劫持。hook1-hook3均按此方法使用即可。</p>
 <h5 id="hook1-输出系统调用号与参数"><a href="#hook1-输出系统调用号与参数" class="headerlink" title="#hook1 输出系统调用号与参数"></a>#hook1 输出系统调用号与参数</h5><p>首先，PTRACE_ATTACH上target进程，PTRACE_ATTACH与PTRACE_TRACEME最大的区别在于，后者并不会使子进程停止，只有在进行exec系统调用的时候才会导致子进程暂停;而ATTACH会使子进程立马暂停下来。<br>PTRACE_SYSCALL是使子进程继续运行，知道在它进行系统调用之前或之后再暂停下来。<br>所以这里在ATTACH后，立马SYSCALL使target继续运行，然后循环wait等target暂停进行劫持。</p>
 <blockquote>
-<p>arm中系统调用由SWI实现,即软件中断(Software Interrupt),在请求系统服务时造成的中断,由SWI指令造成异常从而切入特权模式,从而允许非特权模式访问特权模式的函数.<br>ARM中有两种系统调用方式: OABI(old application binary interface)和EABI(extended application binary interface).见(内核源码arch/arm/kernel/entry-common.S文件).<br>对于OABI: 通过跟随在swi指令后的调用号来进行. 1101 1111 vvvv vvvv – SWI immed_8 (Thumb指令)格式)</p>
+<p>arm中系统调用由SWI实现,即软件中断(Software Interrupt),在请求系统服务时造成的中断,由SWI指令造成异常从而切入特权模式,从而允许非特权模式访问特权模式的函数.<br>ARM中有两种系统调用方式: OABI(old application binary interface)和EABI(extended application binary interface).见(内核源码arch/arm/kernel/entry-common.S文件).<br>对于OABI: 通过跟随在swi指令后的调用号来进行. 1101 1111 vvvv vvvv – SWI immed_8 (Thumb指令)格式)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swi (<span class="meta">#num | 0x900000) (0x900000是个magic值)</span></span><br></pre></td></tr></table></figure></p>
+<p>对于EABI: 调用号存放在r7中. 1110 1111 0000 0000 (ef000000)– SWI 0 (Thumb指令格式)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov r7, <span class="meta">#num</span></span><br><span class="line">swi <span class="number">0x0</span></span><br></pre></td></tr></table></figure></p>
 </blockquote>
-<pre><code>swi (#num | 0x900000) (0x900000是个magic值)
-</code></pre><blockquote>
-<p>对于EABI: 调用号存放在r7中. 1110 1111 0000 0000 (ef000000)– SWI 0 (Thumb指令格式)</p>
-</blockquote>
-<pre><code>mov r7, #num
-swi 0x0
-</code></pre><p>所以下面这个就好理解啦</p>
-<pre><code>scno = ptrace(PTRACE_PEEKTEXT, pid, (void *)(regs-&gt;ARM_pc - 4), NULL);//[pc-4],
-if(scno == 0)
-    return 0;
-
-if (scno == 0xef000000) {
-    scno = regs-&gt;ARM_r7;
-} else {
-    if ((scno &amp; 0x0ff00000) != 0x0f900000) {//关键是看是否是900000(magic值)        
-    return -1;
-    }
-    scno &amp;= 0x000fffff;
-}
-return scno;
-</code></pre><h5 id="hook2-将参数字符串进行反转"><a href="#hook2-将参数字符串进行反转" class="headerlink" title="#hook2 将参数字符串进行反转"></a>#hook2 将参数字符串进行反转</h5><p>没啥好解释的。</p>
+<p>所以下面这个就好理解啦<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">scno = ptrace(PTRACE_PEEKTEXT, pid, (<span class="keyword">void</span> *)(regs-&gt;ARM_pc - <span class="number">4</span>), <span class="literal">NULL</span>);<span class="comment">//[pc-4],</span></span><br><span class="line">   <span class="keyword">if</span>(scno == <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">if</span> (scno == <span class="number">0xef000000</span>) &#123;</span><br><span class="line">       scno = regs-&gt;ARM_r7;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="keyword">if</span> ((scno &amp; <span class="number">0x0ff00000</span>) != <span class="number">0x0f900000</span>) &#123;<span class="comment">//关键是看是否是900000(magic值)        </span></span><br><span class="line">       <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       scno &amp;= <span class="number">0x000fffff</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> scno;</span><br></pre></td></tr></table></figure></p>
+<h5 id="hook2-将参数字符串进行反转"><a href="#hook2-将参数字符串进行反转" class="headerlink" title="#hook2 将参数字符串进行反转"></a>#hook2 将参数字符串进行反转</h5><p>没啥好解释的。</p>
 <h5 id="hook3-动态执行libc-so中的sleep函数"><a href="#hook3-动态执行libc-so中的sleep函数" class="headerlink" title="#hook3 动态执行libc.so中的sleep函数"></a>#hook3 动态执行libc.so中的sleep函数</h5><p>可以看到hook3在ATTACH后没有syscall或continue，直接就开始hook。<br>get_remote_addr，其实就是在Libc.so中有一个sleep库函数，我要计算出它在so文件中的基址，然后再加上libc.so运行时的地址即可。</p>
-<p>我在得到target的reg后，将arm_pc改成sleep函数的地址，然后setreg，再PTRACE_CONTINUE使target继续运行，那么target实际运行的就是sleep函数。</p>
-<pre><code>int stat = 0;
-waitpid(pid, &amp;stat, WUNTRACED);
-while (stat != 0xb7f) {
-    if (ptrace_continue(pid) == -1) {
-        printf(&quot;error\n&quot;);
-        return -1;
-    }
-    waitpid(pid, &amp;stat, WUNTRACED);
-}
-</code></pre><h5 id="关于WUNTRACED"><a href="#关于WUNTRACED" class="headerlink" title="关于WUNTRACED"></a>关于WUNTRACED</h5><blockquote>
-<p>WUNTRACED告诉waitpid，如果子进程进入暂停状态，那么就立即返回。如果是被ptrace的子进程，<strong>那么即使不提供WUNTRACED参数，也会在子进程进入暂停状态的时候立即返回</strong>。对于使用ptrace_cont运行的子进程，它会在3种情况下进入暂停状态：<br>①下一次系统调用；<br>②子进程退出<br>③<strong>子进程的执行发生错误。这里的0xb7f就表示子进程进入了暂停状态，且发送的错误信号为11(SIGSEGV)</strong>，它表示试图访问未分配给自己的内存, 或试图往没有写权限的内存地址写数据。<br>那么什么时候会发生这种错误呢？显然，当子进程执行完注入的函数后，由于我们在前面设置了regs-&gt;ARM_lr = 0，它就会返回到0地址处继续执行，这样就会产生SIGSEGV了！</p>
-<p>再说一下stat的值：高2字节用于表示导致子进程的退出或暂停状态信号值，低2字节表示子进程是退出(0x0)还是暂停(0x7f)状态。0xb7f就表示子进程为暂停状态，导致它暂停的信号量为11即sigsegv错误。</p>
-</blockquote>
-<pre><code>if (regs-&gt;ARM_pc &amp; 1) {
-    /* thumb */
-    regs-&gt;ARM_pc &amp;= (~1u);
-    regs-&gt;ARM_cpsr |= CPSR_T_MASK;
-} else {
-    /* arm */
-    regs-&gt;ARM_cpsr &amp;= ~CPSR_T_MASK;
-}
-</code></pre><blockquote>
-<p>指令使用目标地址值的bit[0]来确定目标地址的指令类型。bit[0]的值为1时，目标程序为Thumb指令；bit[0]值为0时，目标程序为ARM指令。<br>CPSR寄存器 第六位为T。T=0,代表为ARM指令，T为1,代表为Thumb指令。</p>
-</blockquote>
-<h5 id="使用方法2："><a href="#使用方法2：" class="headerlink" title="使用方法2："></a>使用方法2：</h5><p>hook4开始要使用自己写的.so文件，所以把inject.c拷贝到jni文件下，然后编写Android.mk生成动态库文件。之后把libinject.so push 到/data/local/tmp下。之后运行target，再./hook4就可以进行劫持。</p>
-<pre><code>include $(CLEAR_VARS)
-LOCAL_MODULE    := inject
-LOCAL_SRC_FILES := inject.c
-LOCAL_LDLIBS := -llog 
-include $(BUILD_SHARED_LIBRARY)
-</code></pre><h5 id="hook4-动态加载so并执行自定义函数"><a href="#hook4-动态加载so并执行自定义函数" class="headerlink" title="#hook4: 动态加载so并执行自定义函数"></a>#hook4: 动态加载so并执行自定义函数</h5><p>保存当前寄存器的状态 -&gt; 获取目标程序的mmap, dlopen, dlsym, dlclose 地址 -&gt; 调用mmap分配一段内存空间用来保存参数信息 –&gt; 调用dlopen加载so文件 -&gt; 调用dlsym找到目标函数地址 -&gt; 使用ptrace_call执行目标函数 -&gt; 调用 dlclose 卸载so文件 -&gt; 恢复寄存器的状态。</p>
+<p>我在得到target的reg后，将arm_pc改成sleep函数的地址，然后setreg，再PTRACE_CONTINUE使target继续运行，那么target实际运行的就是sleep函数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> stat = <span class="number">0</span>;</span><br><span class="line">    waitpid(pid, &amp;stat, WUNTRACED);</span><br><span class="line">    <span class="keyword">while</span> (stat != <span class="number">0xb7f</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (ptrace_continue(pid) == <span class="number">-1</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"error\n"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        waitpid(pid, &amp;stat, WUNTRACED);</span><br><span class="line">    &#125;</span><br><span class="line">```    </span><br><span class="line"><span class="meta">##### 关于WUNTRACED</span></span><br><span class="line"></span><br><span class="line">&gt;WUNTRACED告诉waitpid，如果子进程进入暂停状态，那么就立即返回。如果是被ptrace的子进程，**那么即使不提供WUNTRACED参数，也会在子进程进入暂停状态的时候立即返回**。对于使用ptrace_cont运行的子进程，它会在<span class="number">3</span>种情况下进入暂停状态：</span><br><span class="line">&gt;①下一次系统调用；</span><br><span class="line">&gt;②子进程退出</span><br><span class="line">&gt;③**子进程的执行发生错误。这里的<span class="number">0xb7f</span>就表示子进程进入了暂停状态，且发送的错误信号为<span class="number">11</span>(SIGSEGV)**，它表示试图访问未分配给自己的内存, 或试图往没有写权限的内存地址写数据。</span><br><span class="line">&gt;那么什么时候会发生这种错误呢？显然，当子进程执行完注入的函数后，由于我们在前面设置了regs-&gt;ARM_lr = <span class="number">0</span>，它就会返回到<span class="number">0</span>地址处继续执行，这样就会产生SIGSEGV了！</span><br><span class="line"></span><br><span class="line">&gt;再说一下stat的值：高<span class="number">2</span>字节用于表示导致子进程的退出或暂停状态信号值，低<span class="number">2</span>字节表示子进程是退出(<span class="number">0x0</span>)还是暂停(<span class="number">0x7f</span>)状态。<span class="number">0xb7f</span>就表示子进程为暂停状态，导致它暂停的信号量为<span class="number">11</span>即sigsegv错误。</span><br><span class="line">```<span class="function">c</span><br><span class="line">	<span class="title">if</span> <span class="params">(regs-&gt;ARM_pc &amp; <span class="number">1</span>)</span> </span>&#123;</span><br><span class="line">        <span class="comment">/* thumb */</span></span><br><span class="line">        regs-&gt;ARM_pc &amp;= (~<span class="number">1u</span>);</span><br><span class="line">        regs-&gt;ARM_cpsr |= CPSR_T_MASK;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/* arm */</span></span><br><span class="line">        regs-&gt;ARM_cpsr &amp;= ~CPSR_T_MASK;</span><br><span class="line">    &#125;</span><br><span class="line">``` </span><br><span class="line">&gt;指令使用目标地址值的bit[<span class="number">0</span>]来确定目标地址的指令类型。bit[<span class="number">0</span>]的值为<span class="number">1</span>时，目标程序为Thumb指令；bit[<span class="number">0</span>]值为<span class="number">0</span>时，目标程序为ARM指令。</span><br><span class="line">CPSR寄存器 第六位为T。T=<span class="number">0</span>,代表为ARM指令，T为<span class="number">1</span>,代表为Thumb指令。</span><br><span class="line"></span><br><span class="line"><span class="meta">##### 使用方法2：</span></span><br><span class="line">hook4开始要使用自己写的.so文件，所以把inject.c拷贝到jni文件下，然后编写Android.mk生成动态库文件。之后把libinject.so push 到/data/local/tmp下。之后运行target，再./hook4就可以进行劫持。</span><br><span class="line">```c</span><br><span class="line">	include $(CLEAR_VARS)</span><br><span class="line">	LOCAL_MODULE    := inject</span><br><span class="line">	LOCAL_SRC_FILES := inject.c</span><br><span class="line">	LOCAL_LDLIBS := -llog </span><br><span class="line">	include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure></p>
+<h5 id="hook4-动态加载so并执行自定义函数"><a href="#hook4-动态加载so并执行自定义函数" class="headerlink" title="#hook4: 动态加载so并执行自定义函数"></a>#hook4: 动态加载so并执行自定义函数</h5><p>保存当前寄存器的状态 -&gt; 获取目标程序的mmap, dlopen, dlsym, dlclose 地址 -&gt; 调用mmap分配一段内存空间用来保存参数信息 –&gt; 调用dlopen加载so文件 -&gt; 调用dlsym找到目标函数地址 -&gt; 使用ptrace_call执行目标函数 -&gt; 调用 dlclose 卸载so文件 -&gt; 恢复寄存器的状态。</p>
 <p>这里mmap我一开始一脸懵逼，没学过操作系统真的很心累啊T T。大神之所以使用mmap，是为了共享参数。在target中新增一块内存地址，然后把各种函数参数都写到这块内存里面，之后进行调用就很方便了。</p>
 <p>这里我们不光使用printf()还使用了android debug的函数LOGD()用来输出调试结果。所以在编译时我们需要加上LOCAL_LDLIBS := -llog。</p>
 <h5 id="hook5-函数挂钩实现native层hook"><a href="#hook5-函数挂钩实现native层hook" class="headerlink" title="#hook5: 函数挂钩实现native层hook"></a>#hook5: 函数挂钩实现native层hook</h5><p>其实就是android-inline-hook。<br>这里依旧要拷贝.so文件至手机。<br>基本思想是:</p>
@@ -515,65 +453,31 @@ include $(BUILD_SHARED_LIBRARY)
 <li>改变完后，调用hook_precall()恢复target为正常,然后让pc指向它。</li>
 <li>如果想一直劫持，就调用hook_postcall()再替换指令即可。</li>
 </ul>
-<p>再来看hook_direct函数。</p>
-<pre><code>hook_direct(&amp;eph,hookaddr,my_sevenWeapons);
-</code></pre><p>在main中调用hook_direct函数，其中hookaddr是我们要劫持的函数的地址，也就是target中的函数，my_sevenWeapons是我们要替换成的我们自己编写的函数，它存在于so文件中。eph是一个结构体</p>
-<pre><code>struct hook_t {
-unsigned int jump[3];
-unsigned int store[3];
-unsigned int orig;
-unsigned int patch;
-};
-</code></pre><p>首先，因为我们要修改的是target中的代码段，这一般是不可写的，所以要用mprotect把区间改成可写。</p>
+<p>再来看hook_direct函数。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hook_direct(&amp;eph,hookaddr,my_sevenWeapons);</span><br></pre></td></tr></table></figure></p>
+<p>在main中调用hook_direct函数，其中hookaddr是我们要劫持的函数的地址，也就是target中的函数，my_sevenWeapons是我们要替换成的我们自己编写的函数，它存在于so文件中。eph是一个结构体<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="keyword">hook_t</span> &#123;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> jump[<span class="number">3</span>];</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> store[<span class="number">3</span>];</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> orig;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> patch;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>首先，因为我们要修改的是target中的代码段，这一般是不可写的，所以要用mprotect把区间改成可写。</p>
 <blockquote>
-<p>虽然android有ASLR，但并没有PIE，所以program image是固定在0x8000这个地址的，因此我们用mprotect()函数将整个target代码段变成RWX，这样我们就能修改函数入口处的代码了。是否修改成功可以通过cat /proc/[pid]/maps查看。&lt;我测了一下，的确代码段是从8000-a000&gt;</p>
+<p>虽然android有ASLR，但并没有PIE，所以program image是固定在0x8000这个地址的，因此我们用mprotect()函数将整个target代码段变成RWX，这样我们就能修改函数入口处的代码了。是否修改成功可以通过cat /proc/[pid]/maps查看。&lt;我测了一下，的确代码段是从8000-a000&gt;<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//modify function entry	</span></span><br><span class="line">h-&gt;patch = (<span class="keyword">unsigned</span> <span class="keyword">int</span>)hookf;</span><br><span class="line">h-&gt;orig = addr;</span><br><span class="line">h-&gt;jump[<span class="number">0</span>] = <span class="number">0xe59ff000</span>; <span class="comment">// LDR pc, [pc, #0]</span></span><br><span class="line">h-&gt;jump[<span class="number">1</span>] = h-&gt;patch;</span><br><span class="line">h-&gt;jump[<span class="number">2</span>] = h-&gt;patch;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)</span><br><span class="line">	h-&gt;store[i] = ((<span class="keyword">int</span>*)h-&gt;orig)[i];</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++)</span><br><span class="line">	((<span class="keyword">int</span>*)h-&gt;orig)[i] = h-&gt;jump[i];</span><br><span class="line"></span><br><span class="line"><span class="comment">//cacheflush	</span></span><br><span class="line">hook_cacheflush((<span class="keyword">unsigned</span> <span class="keyword">int</span>)h-&gt;orig, (<span class="keyword">unsigned</span> <span class="keyword">int</span>)h-&gt;orig+<span class="keyword">sizeof</span>(h-&gt;jump));</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
-<pre><code>//modify function entry    
-h-&gt;patch = (unsigned int)hookf;
-h-&gt;orig = addr;
-h-&gt;jump[0] = 0xe59ff000; // LDR pc, [pc, #0]
-h-&gt;jump[1] = h-&gt;patch;
-h-&gt;jump[2] = h-&gt;patch;
-for (i = 0; i &lt; 3; i++)
-    h-&gt;store[i] = ((int*)h-&gt;orig)[i];
-for (i = 0; i &lt; 3; i++)
-    ((int*)h-&gt;orig)[i] = h-&gt;jump[i];
-
-//cacheflush    
-hook_cacheflush((unsigned int)h-&gt;orig, (unsigned int)h-&gt;orig+sizeof(h-&gt;jump));
-return 1;
-</code></pre><p>h-&gt;patch 是我们自己写的函数地址。<br>h-&gt;origin 是要hook的函数地址。<br>h-&gt;jump<br>h-&gt;store是将hook的函数的前三条语句保存下来。然后再把h-&gt;jump放到h-&gt;origin中，替换原函数的前三条语句。</p>
+<p>h-&gt;patch 是我们自己写的函数地址。<br>h-&gt;origin 是要hook的函数地址。<br>h-&gt;jump<br>h-&gt;store是将hook的函数的前三条语句保存下来。然后再把h-&gt;jump放到h-&gt;origin中，替换原函数的前三条语句。</p>
 <blockquote>
 <p>随后我们需要确定目标函数的地址，这个有两种方法。如果目标程序本身没有被strip的话，那些symbol都是存在的，因此可以使用dlopen()和dlsym()等方法来获取目标函数地址。但很多情况，目标程序都会被strip，特别是可以直接运行的二进制文件默认都会被直接strip。比如target中的sevenWeapons()这个函数名会在编译的时候去掉，所以我们使用dlsym()的话是无法找到这个函数的。这时候我们就需要使用ida或者objdump来定位一下目标函数的地址。</p>
 <p>我们把目标函数的第一条指令修改为 LDR pc, [pc, #0]，这条指令的意思是跳转到PC指针所指的地址，由于pc寄存器读出的值实际上是当前指令地址加8，所以我们把后面两处指令都保存为hook函数的地址，这样的话，我们就能控制PC跳转到hook函数的地址了。<br>最后我们再调用hook_cacheflush()这个函数来刷新一下指令的缓存。因为虽然前面的操作修改了内存中的指令，但有可能被修改的指令已经被缓存起来了，再执行的话，CPU可能会优先执行缓存中的指令，使得修改的指令得不到执行。所以我们需要使用一个隐藏的系统调用来刷新一下缓存。(这不仅让我想起了路由器中的sleep函数T T)</p>
 </blockquote>
 <h4 id="hook-from-古河"><a href="#hook-from-古河" class="headerlink" title="hook from  古河"></a>hook from  <a href="http://bbs.pediy.com/showthread.php?t=141355" target="_blank" rel="external">古河<a></a></a></h4><p>古河大大的hook其实就是前面的Hook4方法，利用自己写的.so文件的函数进行hook。当然一开始看他的代码非常心累，还用到了shellcode.s汇编来进行利用。其实说到底他只是把所有的函数地址都现在shellcode.s中定义好，然后在.so文件中作为外部变量进行引用，所有例如dlpen函数的实现也都放到汇编中罢了。</p>
 <p>主要关注<strong>inject_remote_process</strong>函数。<br>例如，_dlopen_addr_s在shellcode.s中进行定义，然后在.so文件中extern进行外部引用。</p>
-<pre><code>code_length = (uint32_t)&amp;_inject_end_s - (uint32_t)&amp;_inject_start_s;//获取注入ShellCode代码指令的长度
-dlopen_param1_ptr = local_code_ptr + code_length + 0x20;//本地为函数dlopen的第1个参数pathname变量申请内存空间
-dlsym_param2_ptr = dlopen_param1_ptr + MAX_PATH;//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间
-saved_r0_pc_ptr = dlsym_param2_ptr + MAX_PATH;//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间
-inject_param_ptr = saved_r0_pc_ptr + MAX_PATH;  //本地为附加远程目标进程的Hook函数的参数inject_param_ptr申请内存空间 
-</code></pre><p>_inject_start_s为汇编中定义的shellcode开始符号</p>
-<p>所以古河的做法是，用mmap申请一段内存空间，构造方法是:<br>shellcode+dlpen_param1+dlsym_param2+saved_ro_pc+inject_param<br>把上述构造的内容放到mmap申请得到的内存空间中。</p>
-<pre><code>/* dlopen parameter 1: library name */
-strcpy( dlopen_param1_ptr, library_path );
-_dlopen_param1_s = REMOTE_ADDR( dlopen_param1_ptr, local_code_ptr, remote_code_ptr );
-DEBUG_PRINT( &quot;[+] _dlopen_param1_s: %x\n&quot;, _dlopen_param1_s );
-</code></pre><p>当然前面得到的_dlopen_param1_ptr都是在本地shellcode开始的地址。还要转换为放到mmap申请得到的内存空间后的remote_addr。</p>
-<pre><code>memcpy( &amp;regs, &amp;original_regs, sizeof(regs) );
-regs.ARM_sp = (long)remote_code_ptr;//修改附加远程目标进程的sp寄存器的值为ShellCode的注入地址
-regs.ARM_pc = (long)remote_code_ptr;//修改附加远程目标进程的pc寄存器的值为ShellCode的注入地址
-ptrace_setregs( target_pid, &amp;regs );
-ptrace_detach( target_pid );
-</code></pre><p>把sp ,pc都置为remote_code_ptr,然后detach使子进程开始运行shellcode。</p>
-<pre><code>remote_code_ptr = map_base+0x3C00; // 这里就预留了0x3c00的空间
-</code></pre><blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">code_length = (<span class="keyword">uint32_t</span>)&amp;_inject_end_s - (<span class="keyword">uint32_t</span>)&amp;_inject_start_s;<span class="comment">//获取注入ShellCode代码指令的长度</span></span><br><span class="line">dlopen_param1_ptr = local_code_ptr + code_length + <span class="number">0x20</span>;<span class="comment">//本地为函数dlopen的第1个参数pathname变量申请内存空间</span></span><br><span class="line">dlsym_param2_ptr = dlopen_param1_ptr + MAX_PATH;<span class="comment">//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间</span></span><br><span class="line">saved_r0_pc_ptr = dlsym_param2_ptr + MAX_PATH;<span class="comment">//本地为附加远程目标进程的寄存器状态值r0-r15(pc)的保存申请内存空间</span></span><br><span class="line">inject_param_ptr = saved_r0_pc_ptr + MAX_PATH;  <span class="comment">//本地为附加远程目标进程的Hook函数的参数inject_param_ptr申请内存空间</span></span><br></pre></td></tr></table></figure>
+<p>_inject_start_s为汇编中定义的shellcode开始符号</p>
+<p>所以古河的做法是，用mmap申请一段内存空间，构造方法是:<br>shellcode+dlpen_param1+dlsym_param2+saved_ro_pc+inject_param<br>把上述构造的内容放到mmap申请得到的内存空间中。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* dlopen parameter 1: library name */</span></span><br><span class="line"><span class="built_in">strcpy</span>( dlopen_param1_ptr, library_path );</span><br><span class="line">_dlopen_param1_s = REMOTE_ADDR( dlopen_param1_ptr, local_code_ptr, remote_code_ptr );</span><br><span class="line">DEBUG_PRINT( <span class="string">"[+] _dlopen_param1_s: %x\n"</span>, _dlopen_param1_s );</span><br></pre></td></tr></table></figure></p>
+<p>当然前面得到的_dlopen_param1_ptr都是在本地shellcode开始的地址。还要转换为放到mmap申请得到的内存空间后的remote_addr。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">memcpy</span>( &amp;regs, &amp;original_regs, <span class="keyword">sizeof</span>(regs) );</span><br><span class="line">regs.ARM_sp = (<span class="keyword">long</span>)remote_code_ptr;<span class="comment">//修改附加远程目标进程的sp寄存器的值为ShellCode的注入地址</span></span><br><span class="line">regs.ARM_pc = (<span class="keyword">long</span>)remote_code_ptr;<span class="comment">//修改附加远程目标进程的pc寄存器的值为ShellCode的注入地址</span></span><br><span class="line">ptrace_setregs( target_pid, &amp;regs );</span><br><span class="line">ptrace_detach( target_pid );</span><br></pre></td></tr></table></figure></p>
+<p>把sp ,pc都置为remote_code_ptr,然后detach使子进程开始运行shellcode。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remote_code_ptr = map_base+<span class="number">0x3C00</span>; <span class="comment">// 这里就预留了0x3c00的空间</span></span><br></pre></td></tr></table></figure></p>
+<blockquote>
 <p>这里可以看到这句话的作用，因为sp也指向remote_addr，在注入代码之前一定得预留部分空间用作函数调用的栈空间</p>
 </blockquote>
 <p><a href="http://blog.csdn.net/jinzhuojun/article/details/9900105" target="_blank" rel="external">Android中的so注入(inject)和挂钩(hook) - For both x86 and arm</a></p>
 <p>网上也有大神实现了不用shellcode.s，直接在.so调call来进行hook的，大神还区分了i386和arm平台，对i386平台我就不多写了。</p>
 <h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p><a href="http://kiya.space/2015/12/21/hook-syscall/" target="_blank" rel="external">hook - Android ARM下的的so注入<a></a></a></p>
+<h4 id="Reference-1"><a href="#Reference-1" class="headerlink" title="Reference"></a>Reference</h4><p><a href="http://kiya.space/2015/12/21/hook-syscall/" target="_blank" rel="external">hook - Android ARM下的的so注入<a></a></a></p>
 
           
         
