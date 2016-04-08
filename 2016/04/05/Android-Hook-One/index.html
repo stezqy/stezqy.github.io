@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android,Hook," />
+  <meta name="keywords" content="Hook,android," />
 
 
 
@@ -60,21 +60,18 @@
 
 
 <meta name="description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
-所有代码详见github。
-Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。123456789LOCAL_PATH := $(call my-dir)incl">
+所有代码详见github。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hook详解(一)">
-<meta property="og:url" content="http://yoursite.com/2016/04/05/hello-world/index.html">
+<meta property="og:url" content="http://yoursite.com/2016/04/05/Android-Hook-One/index.html">
 <meta property="og:site_name" content="STEVEN'S BLOG">
 <meta property="og:description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
-所有代码详见github。
-Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。123456789LOCAL_PATH := $(call my-dir)incl">
-<meta property="og:updated_time" content="2016-04-07T11:53:06.004Z">
+所有代码详见github。">
+<meta property="og:updated_time" content="2016-04-08T12:22:25.687Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hook详解(一)">
 <meta name="twitter:description" content="写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。
-所有代码详见github。
-Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。123456789LOCAL_PATH := $(call my-dir)incl">
+所有代码详见github。">
 
 
 
@@ -304,8 +301,8 @@ Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文�
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/04/05/hello-world/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/05/hello-world/" itemprop="commentsCount"></span>
+                <a href="/2016/04/05/Android-Hook-One/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/05/Android-Hook-One/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -328,7 +325,7 @@ Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文�
 
       
         <p>写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。</p>
-<p>所有代码详见github。</p>
+<p>所有代码详见github。<br><a id="more"></a> </p>
 <h3 id="Hook-From-蒸米"><a href="#Hook-From-蒸米" class="headerlink" title="Hook From 蒸米"></a>Hook From <a href="http://drops.wooyun.org/tips/9300" target="_blank" rel="external">蒸米</a></h3><h5 id="使用方法1"><a href="#使用方法1" class="headerlink" title="使用方法1:"></a>使用方法1:</h5><p>将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH := $(call my-dir)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE    := target</span><br><span class="line">LOCAL_SRC_FILES := target.c</span><br><span class="line">include $(BUILD_EXECUTABLE)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE    := hook1</span><br><span class="line">LOCAL_SRC_FILES := hook1.c</span><br><span class="line">include $(BUILD_EXECUTABLE)</span><br></pre></td></tr></table></figure></p>
 <p>进入cmd,使用ndk-build编译，就会生成target,hook1文件。然后<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb push target /data/local/tmp</span><br><span class="line">adb shell</span><br><span class="line">cd /data/local/tmp</span><br><span class="line">chmod <span class="number">777</span> ./target</span><br><span class="line">./target</span><br></pre></td></tr></table></figure></p>
 <p>就能看见target已经开始运行了。<br>然后ps得到target的进程号,再按照上面一样的方法把hook1文件拷贝至手机，</p>
@@ -398,9 +395,9 @@ Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文�
       
         <div class="post-tags">
           
-            <a href="/tags/android/" rel="tag">#android</a>
-          
             <a href="/tags/Hook/" rel="tag">#Hook</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
           
         </div>
       
@@ -413,7 +410,7 @@ Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文�
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/04/06/My-New-Post/" rel="prev" title="智能指针">
+              <a href="/2016/04/06/Android-Smarter-Pointers/" rel="prev" title="智能指针">
                 智能指针 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -441,8 +438,8 @@ Hook From 蒸米使用方法1:将target.c文件，hook1.c文件拷贝至jni文�
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/04/05/hello-world/"
-           data-title="Hook详解(一)" data-url="http://yoursite.com/2016/04/05/hello-world/">
+      <div class="ds-thread" data-thread-key="2016/04/05/Android-Hook-One/"
+           data-title="Hook详解(一)" data-url="http://yoursite.com/2016/04/05/Android-Hook-One/">
       </div>
     
   </div>

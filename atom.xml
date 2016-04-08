@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2016-04-08T12:08:05.403Z</updated>
+  <updated>2016-04-08T12:22:21.156Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,13 +17,13 @@
   
   <entry>
     <title>智能指针</title>
-    <link href="http://yoursite.com/2016/04/06/My-New-Post/"/>
-    <id>http://yoursite.com/2016/04/06/My-New-Post/</id>
+    <link href="http://yoursite.com/2016/04/06/Android-Smarter-Pointers/"/>
+    <id>http://yoursite.com/2016/04/06/Android-Smarter-Pointers/</id>
     <published>2016-04-06T07:41:35.568Z</published>
-    <updated>2016-04-08T12:08:05.403Z</updated>
+    <updated>2016-04-08T12:22:21.156Z</updated>
     
     <content type="html">&lt;p&gt;本文来自老罗《Android源代码情景分析》第三章–智能指针  阅读笔记&lt;br&gt;代码已整理在github上。&lt;br&gt;这章阅读无比通顺，一气呵成。&lt;/p&gt;
-&lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h3&gt;&lt;p&gt;我们知道，在android中，我们通常使用引用技术来维护对象的生命周期。&lt;strong&gt;智能指针&lt;/strong&gt;正是一种能够自动维护对象的引用计数的技术。特别说明，智能指针是&lt;strong&gt;对象&lt;/strong&gt;，而不是指针，它引用了一个实际使用的对象，并且在它(智能指针)构造时，增加引用对象的计数，在它析构时，自动减少引用对象的计数。&lt;/p&gt;
+&lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h3&gt;&lt;p&gt;我们知道，在android中，我们通常使用引用技术来维护对象的生命周期。&lt;strong&gt;智能指针&lt;/strong&gt;正是一种能够自动维护对象的引用计数的技术。特别说明，智能指针是&lt;strong&gt;对象&lt;/strong&gt;，而不是指针，它引用了一个实际使用的对象，并且在它(智能指针)构造时，增加引用对象的计数，在它析构时，自动减少引用对象的计数。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt; &lt;/p&gt;
 &lt;h5 id=&quot;引用依赖&quot;&gt;&lt;a href=&quot;#引用依赖&quot; class=&quot;headerlink&quot; title=&quot;引用依赖&quot;&gt;&lt;/a&gt;引用依赖&lt;/h5&gt;&lt;blockquote&gt;
 &lt;p&gt;在使用GC时，最经典的问题就是它一次只能收集一个对象所占用的对象。那就会存在引用依赖关系，比如A/B互相引用，就算A/B都想释放，却都因为对方引用着自己而无法释放。&lt;br&gt;因此，android采用强引用和弱引用计数两种方法来解决问题。它采用轻量级指针(Light Pointer),强指针(Strong Pointer),弱指针(Weak Pointer)来进行技术。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -76,30 +76,30 @@
     <summary type="html">
     
       &lt;p&gt;本文来自老罗《Android源代码情景分析》第三章–智能指针  阅读笔记&lt;br&gt;代码已整理在github上。&lt;br&gt;这章阅读无比通顺，一气呵成。&lt;/p&gt;
-&lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;
+&lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h3&gt;&lt;p&gt;我们知道，在android中，我们通常使用引用技术来维护对象的生命周期。&lt;strong&gt;智能指针&lt;/strong&gt;正是一种能够自动维护对象的引用计数的技术。特别说明，智能指针是&lt;strong&gt;对象&lt;/strong&gt;，而不是指针，它引用了一个实际使用的对象，并且在它(智能指针)构造时，增加引用对象的计数，在它析构时，自动减少引用对象的计数。&lt;br&gt;
     
     </summary>
     
       <category term="Android Framework" scheme="http://yoursite.com/categories/Android-Framework/"/>
     
     
+      <category term="android" scheme="http://yoursite.com/tags/android/"/>
+    
       <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
     
       <category term="阅读笔记" scheme="http://yoursite.com/tags/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"/>
-    
-      <category term="android" scheme="http://yoursite.com/tags/android/"/>
     
   </entry>
   
   <entry>
     <title>Hook详解(一)</title>
-    <link href="http://yoursite.com/2016/04/05/hello-world/"/>
-    <id>http://yoursite.com/2016/04/05/hello-world/</id>
+    <link href="http://yoursite.com/2016/04/05/Android-Hook-One/"/>
+    <id>http://yoursite.com/2016/04/05/Android-Hook-One/</id>
     <published>2016-04-05T05:25:44.293Z</published>
-    <updated>2016-04-07T11:53:06.004Z</updated>
+    <updated>2016-04-08T12:22:25.687Z</updated>
     
     <content type="html">&lt;p&gt;写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。&lt;/p&gt;
-&lt;p&gt;所有代码详见github。&lt;/p&gt;
+&lt;p&gt;所有代码详见github。&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt; &lt;/p&gt;
 &lt;h3 id=&quot;Hook-From-蒸米&quot;&gt;&lt;a href=&quot;#Hook-From-蒸米&quot; class=&quot;headerlink&quot; title=&quot;Hook From 蒸米&quot;&gt;&lt;/a&gt;Hook From &lt;a href=&quot;http://drops.wooyun.org/tips/9300&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;蒸米&lt;/a&gt;&lt;/h3&gt;&lt;h5 id=&quot;使用方法1&quot;&gt;&lt;a href=&quot;#使用方法1&quot; class=&quot;headerlink&quot; title=&quot;使用方法1:&quot;&gt;&lt;/a&gt;使用方法1:&lt;/h5&gt;&lt;p&gt;将target.c文件，hook1.c文件拷贝至jni文件夹,编写Android.mk文件。&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;LOCAL_PATH := $(call my-dir)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;include $(CLEAR_VARS)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;LOCAL_MODULE    := target&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;LOCAL_SRC_FILES := target.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;include $(BUILD_EXECUTABLE)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;include $(CLEAR_VARS)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;LOCAL_MODULE    := hook1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;LOCAL_SRC_FILES := hook1.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;include $(BUILD_EXECUTABLE)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;进入cmd,使用ndk-build编译，就会生成target,hook1文件。然后&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;adb push target /data/local/tmp&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;adb shell&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;cd /data/local/tmp&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;chmod &lt;span class=&quot;number&quot;&gt;777&lt;/span&gt; ./target&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;./target&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;就能看见target已经开始运行了。&lt;br&gt;然后ps得到target的进程号,再按照上面一样的方法把hook1文件拷贝至手机，&lt;/p&gt;
@@ -154,17 +154,16 @@
     <summary type="html">
     
       &lt;p&gt;写android hook网上到处都是，但是作为菜鸟的我要不看不懂原理，要不就不知道到底应该怎么使用T T，这篇文章把网上所有的都整理了一下，给自己一点参考吧。&lt;/p&gt;
-&lt;p&gt;所有代码详见github。&lt;/p&gt;
-&lt;h3 id=&quot;Hook-From-蒸米&quot;&gt;&lt;a href=&quot;
+&lt;p&gt;所有代码详见github。&lt;br&gt;
     
     </summary>
     
       <category term="android逆向" scheme="http://yoursite.com/categories/android%E9%80%86%E5%90%91/"/>
     
     
-      <category term="android" scheme="http://yoursite.com/tags/android/"/>
-    
       <category term="Hook" scheme="http://yoursite.com/tags/Hook/"/>
+    
+      <category term="android" scheme="http://yoursite.com/tags/android/"/>
     
   </entry>
   
