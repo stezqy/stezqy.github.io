@@ -1,0 +1,682 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,加固," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="STEVEN'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="这篇文章介绍一下自己学习dex加固的过程。虽然市面上比这篇文章介绍的技术要先进的多了,但还是从基础抓起吧。而且这种最简单的加固实践起来也遇到好多坑，一开始看reference里的文章真是云里雾里，所以记录一下以免以后忘了思想。
+代码见github。
+原理我们在加固的过程中需要三个对象：
+
+需要加密的Apk(源Apk)
+壳程序Apk(负责解密Apk工作)
+加密工具(将源Apk进行加密和壳Dex合并成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dex文件加固">
+<meta property="og:url" content="http://yoursite.com/2016/04/09/Android-Dex-Reinforce/index.html">
+<meta property="og:site_name" content="STEVEN'S BLOG">
+<meta property="og:description" content="这篇文章介绍一下自己学习dex加固的过程。虽然市面上比这篇文章介绍的技术要先进的多了,但还是从基础抓起吧。而且这种最简单的加固实践起来也遇到好多坑，一开始看reference里的文章真是云里雾里，所以记录一下以免以后忘了思想。
+代码见github。
+原理我们在加固的过程中需要三个对象：
+
+需要加密的Apk(源Apk)
+壳程序Apk(负责解密Apk工作)
+加密工具(将源Apk进行加密和壳Dex合并成">
+<meta property="og:image" content="http://yoursite.com/./1460186676854.png">
+<meta property="og:image" content="http://yoursite.com/./1460187837027.png">
+<meta property="og:image" content="http://yoursite.com/./1460187936132.png">
+<meta property="og:image" content="http://yoursite.com/./1460188585849.png">
+<meta property="og:image" content="http://yoursite.com/./1460193831891.png">
+<meta property="og:image" content="http://yoursite.com/./1460197008334.png">
+<meta property="og:updated_time" content="2016-04-09T10:42:30.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dex文件加固">
+<meta name="twitter:description" content="这篇文章介绍一下自己学习dex加固的过程。虽然市面上比这篇文章介绍的技术要先进的多了,但还是从基础抓起吧。而且这种最简单的加固实践起来也遇到好多坑，一开始看reference里的文章真是云里雾里，所以记录一下以免以后忘了思想。
+代码见github。
+原理我们在加固的过程中需要三个对象：
+
+需要加密的Apk(源Apk)
+壳程序Apk(负责解密Apk工作)
+加密工具(将源Apk进行加密和壳Dex合并成">
+<meta name="twitter:image" content="http://yoursite.com/./1460186676854.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Dex文件加固 | STEVEN'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?05998ebe35187c87782a6edccb343519";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">STEVEN'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">my blog</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'XZ-6L4muiFNE_Rf7bKrg','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Dex文件加固
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-09T18:42:12+08:00" content="2016-04-09">
+              2016-04-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android逆向/" itemprop="url" rel="index">
+                    <span itemprop="name">Android逆向</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/09/Android-Dex-Reinforce/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/09/Android-Dex-Reinforce/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章介绍一下自己学习dex加固的过程。虽然市面上比这篇文章介绍的技术要先进的多了,但还是从基础抓起吧。而且这种最简单的加固实践起来也遇到好多坑，一开始看reference里的文章真是云里雾里，所以记录一下以免以后忘了思想。</p>
+<p>代码见github。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="./1460186676854.png" alt="Alt text"><br>我们在加固的过程中需要三个对象：</p>
+<ul>
+<li>需要加密的Apk(源Apk)</li>
+<li>壳程序Apk(负责解密Apk工作)</li>
+<li>加密工具(将源Apk进行加密和壳Dex合并成新的Dex)</li>
+</ul>
+<blockquote>
+<p>解释一下，熟悉android的朋友们都知道。运行android程序后会有一个class.dex文件。它的格式我就不多说了。我们本身有一个source Apk，是我们需要进行加密的Apk。然后我们有一个解壳apk，它负责进行解密，还有一个进行加密的java程序，它负责对apk进行加密。<br>加密java程序工作过程：也就是上面那张图。其实这里有种A要B，B要A的循环过程，所以比较难以理解。现在假设我们已经有了解壳apk的class.dex文件了。那么我们把source apk进行加密后，附在解壳dex的后面，这样就形成新的dex了。<br>解壳apk工作过程：我们先假设解壳apk的class.dex已经是加固过的dex了，解壳Apk就从这个dex去读取加过密的source apk，然后进行解密，再进行运行。所以，<strong>我们最终真正运行的是解壳apk。</strong></p>
+</blockquote>
+<p>理一下全部过程：<br>①编写source apk<br>②编写解壳apk，假设自己的class.dex已经是加固过的dex。<br>③编写加密java程序过程，把解壳dex和source apk进行整合，得到新的class.dex文件。<br>④关键步骤,幸亏看了reference的文章才知道。跪谢大神们。应该把解壳apk变成.zip文件，再替换里面的class.dex，再重打包重签名。一开始傻逼的我以为替换掉后在eclipse再运行就可，然而这会重新生成class.dex，因此总是找不到source apk。</p>
+<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p><strong>截图来自于Reference<1\>。</1\></strong></p>
+<h4 id="source-apk"><a href="#source-apk" class="headerlink" title="source apk"></a>source apk</h4><p><img src="./1460187837027.png" alt="Alt text"></p>
+<h4 id="加密java程序"><a href="#加密java程序" class="headerlink" title="加密java程序"></a>加密java程序</h4><p><img src="./1460187936132.png" alt="Alt text"></p>
+<p>这里脱壳程序的dex文件，就是解壳dex，作者改了个名而已。<br>class.dex是运行java程序后自动生成的文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			File payloadSrcFile = <span class="keyword">new</span> File(<span class="string">"force/ForceApkObj.apk"</span>);   <span class="comment">//需要加壳的程序</span></span><br><span class="line">			System.out.println(<span class="string">"apk size:"</span>+payloadSrcFile.length());</span><br><span class="line">			File unShellDexFile = <span class="keyword">new</span> File(<span class="string">"force/ForceApkObj.dex"</span>);	<span class="comment">//解客dex</span></span><br><span class="line">			<span class="keyword">byte</span>[] payloadArray = encrpt(readFileBytes(payloadSrcFile));<span class="comment">//以二进制形式读出apk，并进行加密处理//对源Apk进行加密操作</span></span><br><span class="line">			<span class="keyword">byte</span>[] unShellDexArray = readFileBytes(unShellDexFile);<span class="comment">//以二进制形式读出dex</span></span><br><span class="line">			<span class="keyword">int</span> payloadLen = payloadArray.length;</span><br><span class="line">			<span class="keyword">int</span> unShellDexLen = unShellDexArray.length;</span><br><span class="line">			<span class="keyword">int</span> totalLen = payloadLen + unShellDexLen +<span class="number">4</span>;<span class="comment">//多出4字节是存放长度的。</span></span><br><span class="line">			<span class="keyword">byte</span>[] newdex = <span class="keyword">new</span> <span class="keyword">byte</span>[totalLen]; <span class="comment">// 申请了新的长度</span></span><br><span class="line">			<span class="comment">//添加解壳代码</span></span><br><span class="line">			System.arraycopy(unShellDexArray, <span class="number">0</span>, newdex, <span class="number">0</span>, unShellDexLen);<span class="comment">//先拷贝dex内容</span></span><br><span class="line">			<span class="comment">//添加加密后的解壳数据</span></span><br><span class="line">			System.arraycopy(payloadArray, <span class="number">0</span>, newdex, unShellDexLen, payloadLen);<span class="comment">//再在dex内容后面拷贝apk的内容</span></span><br><span class="line">			<span class="comment">//添加解壳数据长度</span></span><br><span class="line">			System.arraycopy(intToByte(payloadLen), <span class="number">0</span>, newdex, totalLen-<span class="number">4</span>, <span class="number">4</span>);<span class="comment">//最后4为长度</span></span><br><span class="line">            <span class="comment">//修改DEX file size文件头</span></span><br><span class="line">			fixFileSizeHeader(newdex);</span><br><span class="line">			<span class="comment">//修改DEX SHA1 文件头</span></span><br><span class="line">			fixSHA1Header(newdex);</span><br><span class="line">			<span class="comment">//修改DEX CheckSum文件头</span></span><br><span class="line">			fixCheckSumHeader(newdex);</span><br><span class="line"></span><br><span class="line">			String str = <span class="string">"force/classes.dex"</span>;</span><br><span class="line">			File file = <span class="keyword">new</span> File(str);</span><br><span class="line">			<span class="keyword">if</span> (!file.exists()) &#123;</span><br><span class="line">				file.createNewFile();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			FileOutputStream localFileOutputStream = <span class="keyword">new</span> FileOutputStream(str);</span><br><span class="line">			localFileOutputStream.write(newdex);</span><br><span class="line">			localFileOutputStream.flush();</span><br><span class="line">			localFileOutputStream.close();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的程序很好的体现了下图:<br><img src="./1460188585849.png" alt="Alt text"></p>
+<p>最后多了四个字节用来存放source dex长度。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] intToByte(<span class="keyword">int</span> number) &#123;  </span><br><span class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];  </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">3</span>; i &gt;= <span class="number">0</span>; i--) &#123;  </span><br><span class="line">            b[i] = (<span class="keyword">byte</span>) (number % <span class="number">256</span>);  </span><br><span class="line">            number &gt;&gt;= <span class="number">8</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> b;  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这个是将int转化为byte[4]数组，因为int是32位，每八位换成一个byte。</p>
+<h4 id="更改头部"><a href="#更改头部" class="headerlink" title="更改头部"></a>更改头部</h4><h5 id="更改filesize。"><a href="#更改filesize。" class="headerlink" title="更改filesize。"></a>更改filesize。</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fixFileSizeHeader</span><span class="params">(<span class="keyword">byte</span>[] dexBytes)</span> </span>&#123;  </span><br><span class="line">       <span class="comment">//新文件长度  </span></span><br><span class="line">       <span class="keyword">byte</span>[] newfs = intToByte(dexBytes.length);  </span><br><span class="line">       System.out.println(Integer.toHexString(dexBytes.length));  </span><br><span class="line">       <span class="keyword">byte</span>[] refs = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];  </span><br><span class="line">       <span class="comment">//高位在前，低位在前掉个个---&gt;因为小端格式  </span></span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;  </span><br><span class="line">           refs[i] = newfs[newfs.length - <span class="number">1</span> - i];  </span><br><span class="line">           System.out.println(Integer.toHexString(newfs[i]));  </span><br><span class="line">       &#125;  </span><br><span class="line">       System.arraycopy(refs, <span class="number">0</span>, dexBytes, <span class="number">32</span>, <span class="number">4</span>);<span class="comment">//修改（32-35）  </span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="解壳apk"><a href="#解壳apk" class="headerlink" title="解壳apk"></a>解壳apk</h4><p><img src="./1460193831891.png" alt="Alt text"></p>
+<p>RefInvoke.java是封装反射类工具</p>
+<blockquote>
+<p>Android程序由不同的组件构成，系统在有需要的时候启动程序组件。因此解壳程序必须在Android系统启动组件之前运行，完成对解壳数据的解壳及APK文件的动态加载，否则会使程序出现加载类失败的异常。Android开发者都知道Applicaiton做为整个应用的上下文，会被系统第一时间调用，这也是应用开发者程序代码的第一执行点。因此通过对AndroidMainfest.xml的application的配置可以实现解壳代码第一时间运行。<br>我们需要找到一个时机，就是在脱壳程序还没有运行起来的时候，来加载源程序的Apk，执行他的onCreate方法，那么这个时机不能太晚，不然的话，就是运行脱壳程序，而不是源程序了。查看源码我们知道。Application中有一个方法：attachBaseContext这个方法，他在Application的onCreate方法执行前就会执行了，那么我们的工作就需要在这里进行。</p>
+</blockquote>
+<p>当在AndroidMainfest.xml文件配置为解壳代码的Application时。源程序原有的Applicaiton将被替换，为了不影响源程序代码逻辑，我们需要在解壳代码运行完成后，替换回源程序原有的Application对象。我们通过在AndroidMainfest.xml文件中配置原有Applicaiton类信息来达到我们 的目的。解壳程序要在运行完毕后通过创建配置的Application对象，并通过反射修改回原Application。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta-data android:name=<span class="string">"APPLICATION_CLASS_NAME"</span> android:value=<span class="string">"com.example.forceapkobj.MyApplication"</span>/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在attachBaseContext中，解壳apk</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这是context 赋值</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">super</span>.attachBaseContext(base);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">//创建两个文件夹payload_odex，payload_lib 私有的，可写的文件目录</span></span><br><span class="line">		File odex = <span class="keyword">this</span>.getDir(<span class="string">"payload_odex"</span>, MODE_PRIVATE);</span><br><span class="line">		File libs = <span class="keyword">this</span>.getDir(<span class="string">"payload_lib"</span>, MODE_PRIVATE);</span><br><span class="line">		odexPath = odex.getAbsolutePath();</span><br><span class="line">		libPath = libs.getAbsolutePath();</span><br><span class="line">		apkFileName = odex.getAbsolutePath() + <span class="string">"/payload.apk"</span>;</span><br><span class="line">		File dexFile = <span class="keyword">new</span> File(apkFileName);</span><br><span class="line">		Log.i(<span class="string">"demo"</span>, <span class="string">"apk size:"</span>+dexFile.length());</span><br><span class="line">		<span class="keyword">if</span> (!dexFile.exists())</span><br><span class="line">		&#123;</span><br><span class="line">			dexFile.createNewFile();  <span class="comment">//在payload_odex文件夹内，创建payload.apk</span></span><br><span class="line">			<span class="comment">// 读取程序classes.dex文件</span></span><br><span class="line">			<span class="keyword">byte</span>[] dexdata = <span class="keyword">this</span>.readDexFileFromApk();</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 分离出解壳后的apk文件已用于动态加载</span></span><br><span class="line">			<span class="keyword">this</span>.splitPayLoadFromDex(dexdata);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 配置动态加载环境</span></span><br><span class="line">		Object currentActivityThread = RefInvoke.invokeStaticMethod(</span><br><span class="line">				<span class="string">"android.app.ActivityThread"</span>, <span class="string">"currentActivityThread"</span>,</span><br><span class="line">				<span class="keyword">new</span> Class[] &#123;&#125;, <span class="keyword">new</span> Object[] &#123;&#125;);<span class="comment">//获取主线程对象 http://blog.csdn.net/myarrow/article/details/14223493</span></span><br><span class="line">		String packageName = <span class="keyword">this</span>.getPackageName();<span class="comment">//当前apk的包名</span></span><br><span class="line">		<span class="comment">//下面两句不是太理解</span></span><br><span class="line">		ArrayMap mPackages = (ArrayMap) RefInvoke.getFieldOjbect(</span><br><span class="line">				<span class="string">"android.app.ActivityThread"</span>, currentActivityThread,</span><br><span class="line">				<span class="string">"mPackages"</span>);</span><br><span class="line">		WeakReference wr = (WeakReference) mPackages.get(packageName);</span><br><span class="line">		<span class="comment">//创建被加壳apk的DexClassLoader对象  加载apk内的类和本地代码（c/c++代码）</span></span><br><span class="line">		DexClassLoader dLoader = <span class="keyword">new</span> DexClassLoader(apkFileName, odexPath,</span><br><span class="line">				libPath, (ClassLoader) RefInvoke.getFieldOjbect(</span><br><span class="line">						<span class="string">"android.app.LoadedApk"</span>, wr.get(), <span class="string">"mClassLoader"</span>));</span><br><span class="line">		<span class="comment">//base.getClassLoader(); 是不是就等同于 (ClassLoader) RefInvoke.getFieldOjbect()? 有空验证下//?</span></span><br><span class="line">		<span class="comment">//把当前进程的DexClassLoader 设置成了被加壳apk的DexClassLoader  ----有点c++中进程环境的意思~~</span></span><br><span class="line">		RefInvoke.setFieldOjbect(<span class="string">"android.app.LoadedApk"</span>, <span class="string">"mClassLoader"</span>,</span><br><span class="line">				wr.get(), dLoader);</span><br><span class="line"></span><br><span class="line">		Log.i(<span class="string">"demo"</span>,<span class="string">"classloader:"</span>+dLoader);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span>&#123;</span><br><span class="line">			Object actObj = dLoader.loadClass(<span class="string">"com.example.forceapkobj.MainActivity"</span>);</span><br><span class="line">			Log.i(<span class="string">"demo"</span>, <span class="string">"actObj:"</span>+actObj);</span><br><span class="line">		&#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">			Log.i(<span class="string">"demo"</span>, <span class="string">"activity:"</span>+Log.getStackTraceString(e));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		Log.i(<span class="string">"demo"</span>, <span class="string">"error:"</span>+Log.getStackTraceString(e));</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过反射置换android.app.ActivityThread 中的mClassLoader为加载解密出APK的DexClassLoader，该DexClassLoader一方面加载了源程序、另一方面以原mClassLoader为父节点，这就保证了即加载了源程序又没有放弃原先加载的资源与系统代码。</p>
+<h5 id="ZipInputStream-类"><a href="#ZipInputStream-类" class="headerlink" title="ZipInputStream 类"></a>ZipInputStream 类</h5><p>ZipInputStream是InputStream的子类，通过此类可以方便地读取ZIP格式的压缩文件,使用ZipInputStream可以像ZipFile一样取得ZIP压缩文件中的每一个ZipEntry。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package org.lxh.demo12.zipdemo;   </span><br><span class="line">import java.io.File;  </span><br><span class="line">import java.io.FileInputStream;  </span><br><span class="line">import java.util.zip.ZipEntry;  </span><br><span class="line">import java.util.zip.ZipInputStream;  </span><br><span class="line">public class ZipInputStreamDemo01 &#123;  </span><br><span class="line">public static void main(String[] args) throws Exception &#123;                                        //所有异常抛出  </span><br><span class="line">   File zipFile = new File(&quot;d:&quot; + File.separator + &quot;mldn.zip&quot;);                                            </span><br><span class="line">   ZipInputStream input = null;        // 定义压缩输入流 </span><br><span class="line">   input = new ZipInputStream(new FileInputStream(zipFile));  // 实例化压缩输入流  </span><br><span class="line">   ZipEntry entry = input.getNextEntry(); // 得到一个压缩实体  </span><br><span class="line">   System.out.println(&quot;压缩实体名称：&quot; + entry.getName()) ;                                                     </span><br><span class="line">// 输出实体名称  </span><br><span class="line">   input.close();                   </span><br><span class="line">// 关闭压缩输入流  </span><br><span class="line">   &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a href="http://blog.csdn.net/jiangwei0910410003/article/details/48415225" target="_blank" rel="external">Android中的Apk的加固(加壳)原理解析和实现</a><br><a href="http://blog.csdn.net/itfootball/article/details/50962459" target="_blank" rel="external">Android安全专项-Apk加固</a><br><a href="http://blog.csdn.net/androidsecurity/article/details/8678399" target="_blank" rel="external">Android APK加壳技术方案【1】</a><br><img src="./1460197008334.png" alt="Alt text"></p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+            <a href="/tags/加固/" rel="tag">#加固</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/06/Android-Smarter-Pointers/" rel="next" title="智能指针">
+                <i class="fa fa-chevron-left"></i> 智能指针
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/09/Android-Dex-Reinforce/"
+           data-title="Dex文件加固" data-url="http://yoursite.com/2016/04/09/Android-Dex-Reinforce/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/header.JPG"
+               alt="Steven" />
+          <p class="site-author-name" itemprop="name">Steven</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过程"><span class="nav-number">2.</span> <span class="nav-text">过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#source-apk"><span class="nav-number">2.1.</span> <span class="nav-text">source apk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加密java程序"><span class="nav-number">2.2.</span> <span class="nav-text">加密java程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更改头部"><span class="nav-number">2.3.</span> <span class="nav-text">更改头部</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#更改filesize。"><span class="nav-number">2.3.1.</span> <span class="nav-text">更改filesize。</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解壳apk"><span class="nav-number">2.4.</span> <span class="nav-text">解壳apk</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ZipInputStream-类"><span class="nav-number">2.4.1.</span> <span class="nav-text">ZipInputStream 类</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Steven</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"stezqy"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
